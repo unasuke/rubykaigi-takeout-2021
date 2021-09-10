@@ -1,0 +1,26 @@
+---
+id: rubykaigi-takeout-2021
+base_name: slide
+tags:
+  - ruby
+  - quic
+  - rubykaigi
+  - http
+  - ractor
+presentation_date: 2021-09-11
+presentation_start_time: 
+presentation_end_time: 
+version: 1.0.0
+licenses: ['MIT']
+slideshare_id: 
+speaker_deck_id: 
+ustream_id: 
+vimeo_id: 
+youtube_id: 
+author:
+  markup_language: :rd
+  name: unasuke
+  email: yusuke1994525@gmail.com
+  rubygems_user: unasuke
+  slideshare_user: 
+  speaker_deck_user: 

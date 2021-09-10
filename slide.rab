@@ -1,0 +1,326 @@
+= Ruby, Ractor, QUIC
+
+: author
+   unasuke (Yusuke Nakamura)
+: content-source
+   RubyKaigi Takeout 2021
+: date
+   2021-09-11
+: theme
+   theme
+
+= Self introduction
+
+  * Name: unasuke (Yusuke Nakamura)
+  * Work: freelance Web app developer
+    * OOParts (Cloud Gaming Service) backend dev
+  * Itamae gem maintainer, Kaigi on Rails staff
+  * (('tag:x-small')) GitHub ((<URL:https://github.com/unasuke>))
+  * (('tag:x-small')) Mastodon ((<URL:https://mstdn.unasuke.com/@unasuke>))
+  * (('tag:x-small')) Twitter ((<URL:https://twitter.com/yu_suke1994>))
+
+
+  # image
+  # src = img/icon_face.jpeg
+  # relative_width = 24
+  # align = right
+  # relative_margin_right = -8
+  # relative_margin_top = 33
+
+= Next generation Web
+widespreading Web usage
+\n
+  * Cloud Gaming
+  * Video meeting
+  * Streaming media
+\n
+We want the Web to be faster!
+
+= Cloud Gaming requiement
+
+((*"real-time bidirectional communication"*))
+\n
+
+(1) Send player's input to the game on the cloud machine
+(1) The game render the input result
+(1) Send result to the player's screen (web browser)
+\n
+Repeat the above process as soon as possible for comfortable game play.
+
+(Same as remote working collaboration)
+
+= Way to real-time bidirectional communication on the Web
+* Now
+  * WebRTC
+  * WebSocket
+* Future?
+  * WebTransport
+    * a new server-client protocol over the HTTP/3
+    * use UDP
+    * status: draft → ((<URL:https://datatracker.ietf.org/group/webtrans/documents/>))
+
+= HTTP/3
+A new hyper text transfer protocol (draft)
+
+  # blockquote
+  This document defines HTTP/3, a mapping of HTTP semantics over the QUIC transport protocol
+
+  ((<URL:https://datatracker.ietf.org/doc/draft-ietf-quic-http/>))
+
+"QUIC" ? What is this?
+
+= QUIC
+  * standardized at 2021-05-27 by IETF
+  * More faster than HTTP/2
+  * Using UDP, not TCP
+
+  # image
+  # src = img/quic.svg
+  # relative_width = 55
+  # align = right
+
+(('tag:right'))
+(('tag:xx-small'))
+\n\n\n\n
+Logo from ((<URL:https://quic.tech>))
+
+= Tweet by ko1
+
+  # image
+  # src = img/ko1_tweet.png
+  # relative_width = 57
+
+(('tag:xx-small'))
+(('tag:center'))
+((<URL:https://twitter.com/_ko1/status/1282963500583628800>))
+
+= Tweet by ko1
+two people
+
+* @_ko1 (Koichi Sasada)
+  * Ruby core commiter
+  * Ractor author
+* @kazuho (Kazuho Oku)
+  * author of h2o
+  * QUIC RFC contributor
+
+Sounds interesting!
+
+  # image
+  # src = img/ko1_tweet.png
+  # relative_width = 55
+  # align = right
+
+= What, Why QUIC
+* HTTP uses TCP/IP
+* TCP is reliable, but slow
+  * Oriented data transfer
+  * Retransmission of lost packets
+  * Congestion control
+* UDP is unreliable, but fast
+  * realtime transfer e.g. audio
+
+= What, Why QUIC - TCP's problem
+  * Three way handshake
+    * additional TLS handshake (at secure communication)
+  * Head-of-Line Blocking (HoLB)
+
+\n
+
+  # blockquote
+  QUIC is a new latency-reducing, reliable, and secure internet transport protocol
+
+  ((<URL:https://www.fastly.com/blog/quic-is-now-rfc-9000>))
+
+= Is there a benefit?
+
+Why imprement QUIC on Ruby?
+
+(1) For my study and interest
+(1) For Ractor
+    * There are still few examples of Ractor
+    * helps evaluation and improvement of Ractor
+      * e.g. ((<URL:https://github.com/mame/optcarrot>))
+
+= QUIC - Initial Packet (RFC9001 Appendix A)
+
+  # image
+  # src = img/quic_initial_packet.png
+  # relative_width = 59
+
+
+= QUIC - reading Initial Packet
+
+  # image
+  # src = img/quic_initial_packet_reading_1.png
+  # relative_width = 90
+
+= QUIC - reading Initial Packet
+
+  # image
+  # src = img/quic_initial_packet_reading_2.png
+  # relative_width = 90
+  
+= QUIC - reading Initial Packet
+
+  # image
+  # src = img/quic_initial_packet_reading_3.png
+  # relative_width = 90
+
+= QUIC - reading Initial Packet
+
+  # image
+  # src = img/quic_initial_packet_reading_4.png
+  # relative_width = 90
+
+= QUIC - reading Initial Packet
+
+  # image
+  # src = img/quic_initial_packet_reading_5.png
+  # relative_width = 90
+
+= QUIC - reading Initial Packet
+
+  # image
+  # src = img/quic_initial_packet_reading_6.png
+  # relative_width = 90
+
+= n月刊ラムダノート Vol.2, No.1(2020)
+  # image
+  # src = img/nmonthly-vol-2-no-1-2020.png
+  # relative_width = 26
+
+(('tag:center'))
+(('tag:xx-small'))
+(('#1 パケットの設計から見るQUIC（西田佳史）'))\n
+((<URL:https://www.lambdanote.com/collections/frontpage/products/nmonthly-vol-2-no-1-2020>))
+
+= QUIC - reading Initial Packet by Ruby
+
+  # image
+  # src = img/bindata.png
+  # relative_width = 80
+
+= QUIC - reading Initial Packet by Ruby
+
+  # image
+  # src = img/bindata.png
+  # relative_width = 80
+
+It causes ((*Ractor::IsolationError*)) when use in not main Ractor
+
+= QUIC - reading Initial Packet by Ruby
+How to read each "bit" in Ruby?
+
+  "A" ← 0x41 (ASCII-8BIT)
+  "A" ← 0b01000001 (ASCII-8BIT)
+  "A" → ？ → "01000001"
+
+
+= QUIC - reading Initial Packet by Ruby
+Use "Array#pack", "String#unpack1"
+
+  # enscript ruby
+  "A".unpack1("B*") # => "01000001"
+  ["01000001"].pack("B*") # => "A"
+
+Now, we can each "bit" by Ruby!
+
+= Handling packet by Ractor
+How do we handling UDP packet by Ractor?
+
+= Handling packet by Ractor - think about QPACK
+  * QPACK (Header Compression for HTTP/3)
+    * Static Table
+      * "content-encoding gzip" (values that appear many times)
+    * Dynamic Table
+      * per client-server
+      * e.g. user-agent
+
+(('&RightArrow;')) Create ractor per client that has a dynamic table state...🤔
+
+= Handling packet by Ractor - UDP echo server by Ractor
+  * 3 classes
+    * Server class
+    * Router class
+    * Connection class
+
+= UDP echo server by Ractor - Server class
+
+  # image
+  # src = img/udp_echo_ractor_server.png
+  # relative_width = 75
+
+= UDP echo server by Ractor - Router class
+
+  # image
+  # src = img/udp_echo_ractor_router.png
+  # relative_width = 90
+
+= UDP echo server by Ractor - Connection class
+
+  # image
+  # src = img/udp_echo_ractor_connection.png
+  # relative_width = 90
+
+
+= benchmarking by udpbench
+
+((<URL:https://github.com/unasuke/udpbench>))
+
+Improvised UDP benchmark tool written Go.
+
+Send-receive UDP packet that contain UUIDv4 from goroutines.
+
+
+
+= Result of benchmark UDP echo server by Ractor
+  $ ./udpbench --count 100 --parallelism 100
+  Total request count : 10000
+  Total request time : 10m48.446641s
+  Time per packets : 64.844664ms
+  Failed count : 0
+
+= simple UDP echo server
+  # image
+  # src = img/udp_echo_simple.png
+  # relative_width = 90
+
+= Result of benchmark simple UDP echo server
+  $ ./udpbench --count 100 --parallelism 100
+  Total request count : 10000
+  Total request time : 7.5696799s
+  Time per packets : 756.967µs
+  Failed count : 0
+
+(('tag:center'))
+(('tag:large'))
+x85 faster than Ractor impl 🤷‍♂️❓
+
+= Let's decrypt QUIC packet in Ractor
+
+  # image
+  # src = img/openssl_in_ractor.png
+  # relative_width = 100
+
+= Let's decrypt QUIC packet in Ractor
+
+  # image
+  # src = img/openssl_in_ractor.png
+  # relative_width = 100
+
+Failed by (({OpenSSL::Cipher.new})) 😵
+
+(('tag:xx-small'))
+Can OpenSSL (({rb_ext_ractor_safe(true)})) ...?
+
+= Conclusion
+There are two problems
+
+* Libraies that cannot use in not main Ractor
+  * useful gem → imprement myself (e.g. bindata)
+  * core lib → DEEP DIVE to fix this (e.g. openssl)
+* Need many many code to imprement QUIC
+  * Mozilla's Neqo : 50,000 LoC (Rust) ((<URL:https://github.com/mozilla/neqo>))
+  * aioquic : 17,000 LoC (Python) ((<URL:https://github.com/aiortc/aioquic>))
+  * Ruby : ?
