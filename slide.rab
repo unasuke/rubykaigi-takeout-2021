@@ -210,6 +210,14 @@ Why imprement QUIC on Ruby?
 It causes ((*Ractor::IsolationError*)) when use in not main Ractor
 
 = QUIC - reading Initial Packet by Ruby
+
+  # image
+  # src = img/quic_initial_packet_string.png
+  # relative_width = 100
+
+I cannot read this, and ruby cannot read it ((*bit by bit*)).
+
+= QUIC - reading Initial Packet by Ruby
 How to read each "bit" in Ruby?
 
   "A" ← 0x41 (ASCII-8BIT)
