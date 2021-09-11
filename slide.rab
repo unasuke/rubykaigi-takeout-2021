@@ -44,7 +44,7 @@ We want the Web to be faster!
 (1) Send player's input to the game on the cloud machine
 (1) The game render the input result
 (1) Send result to the player's screen (web browser)
-\n
+
 Repeat the above process as soon as possible for comfortable game play.
 
 (Same as remote working collaboration)
@@ -124,8 +124,6 @@ Sounds interesting!
   * Three way handshake
     * additional TLS handshake (at secure communication)
   * Head-of-Line Blocking (HoLB)
-
-\n
 
   # blockquote
   QUIC is a new latency-reducing, reliable, and secure internet transport protocol
