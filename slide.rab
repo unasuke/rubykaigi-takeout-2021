@@ -314,6 +314,19 @@ Failed by (({OpenSSL::Cipher.new})) 😵
 (('tag:xx-small'))
 Can OpenSSL (({rb_ext_ractor_safe(true)})) ...?
 
+= Wait, I heard about yesterday...
+  # blockquote
+  'Standard libralies are already ractor-safe' by ko1
+
+I heard about that in "Ruby Committers vs the World" ((*yesterday*)).
+
+= OpenSSL is `rb_ext_ractor_safe(true)`
+  # image
+  # src = img/openssl_rb_ext_ractor_safe_true.png
+  # relative_width = 100
+
+Wow...
+
 = Conclusion
 There are two problems
 
